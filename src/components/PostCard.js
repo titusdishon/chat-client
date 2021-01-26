@@ -40,8 +40,7 @@ function PostCard({
           </Button>
         </MyPopUp>
         {
-          (user && user,
-          user.username === username && <DeleteButton postId={id} />)
+          (user && user.username === username && <DeleteButton postId={id} />)
         }
       </Card.Content>
     </Card>
