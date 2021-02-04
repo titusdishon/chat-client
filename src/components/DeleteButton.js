@@ -35,6 +35,7 @@ function DeleteButton({ postId, commentId, callback }) {
         content={commentId?"Delete this comment":"Delete this post"}>
         <Button
             color="red"
+            to=""
             as="div"
             onClick={() => setConfirmOpen(true)}
             floated="right"

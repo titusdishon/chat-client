@@ -14,3 +14,13 @@
     width: 100%;
     text-align: center;
 }
+.ck-editor__editable {
+    height: 40vh;
+    width: 100% !important;
+}
+.post-form{
+    width: 100%;
+}
+.post-submit{
+    float: right;
+}

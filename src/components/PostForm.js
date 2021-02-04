@@ -1,22 +1,23 @@
 import React from "react";
 import { Button, Form } from "semantic-ui-react";
-import { useForm } from "../utils/hooks";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { FETCH_POSTS_QUERY } from "../utils/graphql";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {usePost} from "../utils/hooks";
 
-function PostForm() {
-  const { values, onSubmit, onChange } = useForm(createPostCallBack, {
+function PostForm(props) {
+  const { values, onSubmit, onChange } = usePost(createPostCallBack, {
     body: "",
   });
 
-  const [createPost, { error }] = useMutation(CREATE_POST_MUTATION, {
+  const [createPost,{error}, loading] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     update(proxy, result) {
       const data = proxy.readQuery({
         query: FETCH_POSTS_QUERY,
       });
-      console.log("Hello there", data);
       if (data !== undefined) {
         data.getPosts = [result.data.createPost, ...data.getPosts];
         proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
@@ -30,26 +31,37 @@ function PostForm() {
 
   function createPostCallBack() {
     createPost();
+    props.setOpen(false)
   }
 
   return (
-    <div>
-      <Form onSubmit={onSubmit}>
+    
+    <div className="post-form">
+      <Form onSubmit={onSubmit}  className={loading ? "loading" : ""}>
         <h2>Create a post</h2>
-        <Form.Field>
-          <Form.TextArea
-            placeholder="Hi Learners"
-            name="body"
-            type="textarea"
-            onChange={onChange}
-            error={error ? true : false}
-            value={values.body}
-          />
-
-          <Button type="submit" color="teal">
-            submit
-          </Button>
-        </Form.Field>
+        <CKEditor
+          editor={ClassicEditor}
+          data=""
+          onReady={(editor) => {
+            // You can store the "editor" and use when it is needed.
+            console.log("Editor is ready to use!", editor);
+          }}
+          onChange={(event, editor) => {
+            const data = {body:editor.getData()};
+            console.log("Editor is ready to use!", editor);
+            onChange(data);
+          }}
+          // onBlur={(event, editor) => {
+          //   console.log("Blur.", editor);
+          // }}
+          // onFocus={(event, editor) => {
+          //   console.log("Focus.", editor);
+          // }}
+        />
+        <br/>
+        <br/>
+        <Button type="submit" color="grey" onClick={()=>props.setOpen(false)}>cancel</Button>
+        <Button type="submit" className="post-submit" color="teal">submit</Button>
       </Form>
       {error && (
         <div className="ui error message">

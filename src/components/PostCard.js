@@ -25,7 +25,8 @@ function PostCard({
         <Card.Meta as={Link} to={`/posts/${id}`}>
           {moment(createdAt).fromNow()}
         </Card.Meta>
-        <Card.Description>{body}</Card.Description>
+        <Card.Description>
+        <div dangerouslySetInnerHTML={{ __html: body}}></div></Card.Description>
       </Card.Content>
       <Card.Content extra>
         <LikeButton post={{ id, likes, likeCount }} />
@@ -39,9 +40,7 @@ function PostCard({
             </Label>
           </Button>
         </MyPopUp>
-        {
-          (user && user.username === username && <DeleteButton postId={id} />)
-        }
+        {user && user.username === username && <DeleteButton postId={id} />}
       </Card.Content>
     </Card>
   );
