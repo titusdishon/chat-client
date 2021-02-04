@@ -2,7 +2,6 @@ import { useMutation } from "@apollo/react-hooks";
 import React, { useEffect, useState, useContext } from "react";
 import { Button, Icon, Label } from "semantic-ui-react";
 import { AuthContext } from "../context/auth";
-import {Link} from "react-router-dom";
 import gql from "graphql-tag";
 import MyPopUp from "../utils/MyPopUp";
 
