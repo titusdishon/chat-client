@@ -26,7 +26,6 @@ export const usePost = (callback, initialState = {}) => {
   const [values, setValues] = useState(initialState);
 
   const onChange = (values) => {
-    console.log("changing things here", values);
     setValues(values);
   };
 

@@ -1,36 +1,77 @@
-import React, { useContext, useState, useRef } from "react";
+import React, {useContext, useRef, useState} from "react";
 import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
-import {
-  Card,
-  Grid,
-  Image,
-  Label,
-  Icon,
-  Button,
-  Form,
-} from "semantic-ui-react";
+import {useMutation, useQuery} from "@apollo/react-hooks";
 import moment from "moment";
-import { useMutation } from "@apollo/react-hooks";
-import { AuthContext } from "../context/auth";
+import {AuthContext} from "../context/auth";
 import LikeButton from "../components/LikeButton";
 import DeleteButton from "../components/DeleteButton";
-import MyPopUp from "../utils/MyPopUp";
+import {Avatar, Button, Card, CardContent, Grid, makeStyles, TextField} from "@material-ui/core";
+import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
+import {HtmlTooltip} from "../shared/Tooltip";
+import ReactMarkdown from "react-markdown";
+import gfm from "remark-gfm";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    backgroundColor: "#ffffff",
+    margin: "10px auto 20px auto",
+  },
+  deleteButton: {
+    float: "right",
+  },
+  name: {
+    color: "#01313e",
+    textTransform: "upperCase"
+  },
+  time: {
+    color: "#01313e",
+  },
+  comment: {
+    height: "32px"
+  },
+  text: {
+    fontSize: "0.9em"
+  },
+  avatar:{
+    backgroundColor: "#ffffff",
+    margin:"auto"
+  },
+  avatarOuter:{
+    backgroundColor: "#ffffff",
+    padding:"20px",
+    margin:"10px auto auto auto",
+    textAlign:"center",
+  },
+
+  cardContent: {padding: "0"},
+  commentInput:{
+    width:"100%"
+  },
+  commentButton:{
+    float:"right",
+    margin:"10px auto 10px auto"
+  }
+}));
 function SinglePost(props) {
+  const classes = useStyles()
   const postId = props.match.params.postId;
-  const { user } = useContext(AuthContext);
-  const { data } = useQuery(FETCH_POST_QUERY, { variables: { postId } });
+  const {user} = useContext(AuthContext);
+  const {data} = useQuery(FETCH_POST_QUERY, {variables: {postId}});
   const [comment, setComment] = useState("");
   const commentInputRef = useRef(null);
-
   const [submitComment] = useMutation(SUBMIT_COMMENT_MUTATION, {
     update(_, result) {
       setComment("");
       commentInputRef.current.blur();
     },
-    variables: { postId, body: comment },
+    variables: {postId, body: comment},
   });
+const submitHandler=(e)=>{
+  e.preventDefault();
+  submitComment().then()
+}
+
 
   function deletePostCallback(params) {
     props.history.push("/");
@@ -51,90 +92,94 @@ function SinglePost(props) {
       commentCount,
     } = data.getPost;
     postMarkUp = (
-      <Grid>
-        <Grid.Row>
-          <Grid.Column width={2}>
-            <Image
-              floated="right"
-              size="small"
-              src="https://react.semantic-ui.com/images/avatar/large/molly.png"
-            />
-          </Grid.Column>
-          <Grid.Column width={14}>
-            <Card fluid>
-              <Card.Content>
-                <Card.Header>{username}</Card.Header>
-                <Card.Meta>{moment(createdAt).fromNow()}</Card.Meta>
-                <Card.Description>{body}</Card.Description>
-              </Card.Content>
-              <hr />
-              <Card.Content extra>
-                <LikeButton user={user} post={{ id, likeCount, likes }} />
-                <MyPopUp content="Comment on post">
-                  <Button
-                    as="div"
-                    labelPosition="right"
-                    onClick={() => console.log("comment on this post")}
-                  >
-                    <Button basic color="blue">
-                      <Icon name="comments" />
-                    </Button>
-                    <Label basic color="blue" pointing="left">
-                      {commentCount}
-                    </Label>
+        <div>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <Grid container>
+            <Grid lg={2} sm={12} xs={12} md={2} item>
+             <div className={classes.avatarOuter}>
+               <Avatar
+                   className={classes.avatar}
+                   floated="right"
+                   size="small"
+                   src="https://react.semantic-ui.com/images/avatar/large/molly.png"
+               />
+               <div className={classes.name}>{username}</div>
+               <div className={classes.time}>{moment(createdAt).fromNow()}</div>
+             </div>
+            </Grid>
+            <Grid lg={10} sm={12} xs={12} md={10} item>
+              <Card className={classes.root}>
+                <CardContent>
+                  <div className={`${classes.content} ck-content`}><ReactMarkdown plugins={[gfm]}>{body}</ReactMarkdown></div>
+                </CardContent>
+                <hr/>
+                <CardContent className={classes.cardContent}>
+                  <LikeButton user={user} post={{id, likeCount, likes}}/>
+                  <HtmlTooltip title={`${commentCount} comments on this article`} placement="top" arrow>
+                  <Button >
+                    <ChatBubbleIcon color={"primary"} />
+                    <span className={classes.text}> {commentCount}</span>
                   </Button>
-                </MyPopUp>
-                {
-                  (user && user.username === username && (
-                    <DeleteButton postId={id} callback={deletePostCallback} />
-                  ))
-                }
-              </Card.Content>
-            </Card>
-            {user && (
-              <Card fluid>
-                <Card.Content>
-                  <p>Post a comment</p>
-                  <Form>
-                    <div className="ui action input fluid">
-                      <input
-                        type="text"
-                        placeholder="Comment.."
-                        onChange={(event) => setComment(event.target.value)}
-                        value={comment}
-                        name="comment"
-                        ref={commentInputRef}
-                      />
-                      <button
-                        type="submit"
-                        className="ui button teal"
-                        disabled={comment.trim() === ""}
-                        onClick={submitComment}
-                      >
-                        {" "}
-                        submit
-                      </button>
-                    </div>
-                  </Form>
-                </Card.Content>
+                  </HtmlTooltip>
+                  <div className={classes.deleteButton}>
+                    {user && user.username === username && (<DeleteButton postId={id} callback={deletePostCallback}/>)}
+                  </div>
+                </CardContent>
               </Card>
-            )}
+              {user && (
+                  <Card className={classes.root}>
+                    <CardContent>
+                      <p>Post a comment</p>
+                      <form>
+                        <div >
+                          <TextField
+                              type="text"
+                              multiline
+                              variant={"outlined"}
+                              className={classes.commentInput}
+                              placeholder="Start typing something.."
+                              onChange={(event) => setComment(event.target.value)}
+                              value={comment}
+                              name="comment"
+                              ref={commentInputRef}
+                          />
+                          <Button
+                              className={classes.commentButton}
+                              variant="contained" color="primary"
+                              type="submit"
+                              disabled={comment.trim() === ""}
+                              onClick={submitHandler}
+                          >
+                            {" "}
+                            submit
+                          </Button>
+                        </div>
+                      </form>
+                    </CardContent>
+                  </Card>
+              )}
 
             {comments.map((comment) => (
-              <Card fluid key={comment.id}>
-                <Card.Content>
-                  {user && user.username === comment.username && (
-                    <DeleteButton postId={id} commentId={comment.id} />
-                  )}
-                  <Card.Header>{comment.username}</Card.Header>
-                  <Card.Meta>{moment(comment.createdAt).fromNow()}</Card.Meta>
-                  <Card.Description>{comment.body}</Card.Description>
-                </Card.Content>
-              </Card>
+                <Card key={comment.id} className={classes.root}>
+                  <CardContent>
+                    <div className={classes.name}>{comment.username}</div>
+                    <div className={classes.time}>{moment(comment.createdAt).fromNow()}</div>
+                    {comment.body}
+                    <div className={classes.deleteButton}>
+                      {user && user.username === comment.username && (
+                          <DeleteButton postId={id} commentId={comment.id}/>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
             ))}
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+            </Grid>
+          </Grid>
+        </div>
     );
   }
   return postMarkUp;

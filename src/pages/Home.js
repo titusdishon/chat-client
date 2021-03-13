@@ -1,61 +1,53 @@
-import React, { useContext } from "react";
-import { useQuery } from "@apollo/react-hooks";
-import { Grid, Transition } from "semantic-ui-react";
+import React from "react";
+import {useQuery} from "@apollo/react-hooks";
 import PostCard from "../components/PostCard";
-import { AuthContext } from "../context/auth";
-import PostForm from "../components/PostForm";
-import { FETCH_POSTS_QUERY } from "../utils/graphql";
-import { Button, Modal } from "semantic-ui-react";
+import {FETCH_POSTS_QUERY} from "../utils/graphql";
+import {Container, Grid, Grow, makeStyles} from "@material-ui/core";
+import MenuBar from "../components/Menu/MenuBar";
+
+const useStyles = makeStyles(() => ({
+    header: {
+        fontWeight: "bold",
+        color: "#ffffff",
+    },
+    like: {
+        padding: "10px",
+        backgroundColor: "#000000",
+        marginBottom: "20px",
+    }
+}));
 
 function Home() {
-  const { loading, data } = useQuery(FETCH_POSTS_QUERY);
-  const { user } = useContext(AuthContext);
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <Grid divided>
-      <Grid.Row className="page-title">
-        <h1>Recent Posts</h1>
-      </Grid.Row>
-        <div  className={loading ? "loading" : ""}/>
-      <Grid.Row>
-        {user && (
-          <Grid.Column>
-              <Modal
-                  onClose={() => setOpen(false)}
-                  onOpen={() => setOpen(true)}
-                  open={open}
-                  trigger={<Button >Create Post</Button>}>
-                  <Modal.Content image>
-                      <PostForm  setOpen={(e)=>setOpen(e)}/>
-                  </Modal.Content>
-              </Modal>
-          </Grid.Column>
-        )}
-      </Grid.Row>
-      <Grid.Row>
-        {loading ? (
-          <h1 className="loading">..loading posts..</h1>
-        ) : (
-          <Transition.Group>
-            {data &&
-              data.getPosts.map((post) => (
-                <Grid.Column
-                  key={post.id}
-                  mobile={16}
-                  tablet={16}
-                  computer={16}
-                  style={{ margin: "auto", alignItems: "center" }}
-                >
-                  <PostCard post={post} />
-                </Grid.Column>
-              ))}
-          </Transition.Group>
-        )}
-      </Grid.Row>
-      
-    </Grid>
-  );
+    const {loading, data} = useQuery(FETCH_POSTS_QUERY);
+    const classes = useStyles();
+    return (
+        <Container>
+            <MenuBar/>
+            <div className="page-title">
+                <h3 className={classes.header}>Recent Posts</h3>
+            </div>
+            <div className={loading ? "loading" : ""}/>
+            <br/>
+            <Grid container>
+                {loading ? (
+                    <div className="loading">..loading posts..</div>
+                ) : (
+                    <Grow in={true} mountOnEnter unmountOnExit>
+                        <div style={{width: "100%", justifyContent: "center"}}>
+                            <Grid container spacing={2}>
+                                {data &&
+                                data.getPosts.map((post) => (
+                                    <Grid lg={12} sm={12} md={12} xs={12} key={post.id} item>
+                                        <PostCard post={post}/>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </div>
+                    </Grow>
+                )}
+            </Grid>
+        </Container>
+    );
 }
 
 export default Home;

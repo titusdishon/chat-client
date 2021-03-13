@@ -1,13 +1,24 @@
-import { useMutation } from "@apollo/react-hooks";
-import React, { useEffect, useState, useContext } from "react";
-import { Button, Icon, Label } from "semantic-ui-react";
-import { AuthContext } from "../context/auth";
+import {useMutation} from "@apollo/react-hooks";
+import React, {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../context/auth";
 import gql from "graphql-tag";
-import MyPopUp from "../utils/MyPopUp";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import {Button, makeStyles} from "@material-ui/core";
 
+const useStyles = makeStyles((theme) => ({
+    liked: {
+        color: "red",
+        float: 'left',
+    },
+    notLiked: {
+        color: "green",
+        float: 'left',
+    },
+}));
 function LikeButton({ post: { id, likes, likeCount } }) {
-  const { user } = useContext(AuthContext);
-  const [liked, setLiked] = useState(false);
+    const {user} = useContext(AuthContext);
+    const classes = useStyles();
+    const [liked, setLiked] = useState(false);
   useEffect(() => {
     if (user && likes.find((like) => like.username === user.username)) {
       setLiked(true);
@@ -19,35 +30,29 @@ function LikeButton({ post: { id, likes, likeCount } }) {
   const [likePost]=useMutation(LIKE_POST_MUTATION,{
     variables:{postId:id},
     onError(){
-      return
     }
   });
 
   const LikeButton = user ? (
     liked ? (
-      <Button color="teal">
-        <Icon name="heart" />
-      </Button>
+        <Button className={classes.liked}>
+            <FavoriteIcon/>{likeCount}
+        </Button>
     ) : (
-      <Button color="teal" basic>
-        <Icon name="heart" />
-      </Button>
+        <Button className={classes.notLiked}>
+            <FavoriteIcon/>{likeCount}
+        </Button>
     )
   ) : (
-    <Button color="teal" basic>
-      <Icon name="heart" />
-    </Button>
+      <Button className={classes.notLiked}>
+          <FavoriteIcon/>{likeCount}
+      </Button>
   );
 
   return (
-    <Button as="div" labelPosition="right" onClick={likePost}>
-      <MyPopUp content={liked ?"Unlike post":"Like post"}>
-      {LikeButton}
-      </MyPopUp>
-      <Label as="a" basic color="teal" pointing="left">
-        {likeCount}
-      </Label>
-    </Button>
+      <div onClick={likePost}>
+          {LikeButton}
+      </div>
   );
 }
 

@@ -1,13 +1,26 @@
-import React, { useState } from "react";
-import { Button, Confirm, Icon } from "semantic-ui-react";
+import React, {useState} from "react";
 import gql from "graphql-tag";
-import { useMutation } from "@apollo/react-hooks";
-import { FETCH_POSTS_QUERY } from "../utils/graphql";
-import MyPopUp from "../utils/MyPopUp";
+import {useMutation} from "@apollo/react-hooks";
+import {FETCH_POSTS_QUERY} from "../utils/graphql";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  useMediaQuery,
+  useTheme
+} from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
+import {HtmlTooltip} from "../shared/Tooltip";
 
-function DeleteButton({ postId, commentId, callback }) {
+function DeleteButton({postId, commentId, callback}) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const mutations = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [deletePostOrMutation] = useMutation(mutations, {
     update(proxy) {
       setConfirmOpen(false);
@@ -17,38 +30,49 @@ function DeleteButton({ postId, commentId, callback }) {
 
       if (data !== undefined && !commentId) {
         data.getPosts = data.getPosts.filter(
-          (p) => p.id.trim() !== postId.trim()
+            (p) => p.id.trim() !== postId.trim()
         );
-        proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
+        proxy.writeQuery({query: FETCH_POSTS_QUERY, data});
         if (callback) callback();
       }
-      //TODO: Remove post from cache
     },
     onError(err) {
-      return;
     },
-    variables: { postId, commentId },
+    variables: {postId, commentId},
   });
   return (
-    <>
-      <MyPopUp
-        content={commentId?"Delete this comment":"Delete this post"}>
-        <Button
-            color="red"
-            to=""
-            as="div"
-            onClick={() => setConfirmOpen(true)}
-            floated="right"
+      <>
+        <HtmlTooltip title={commentId ? "Delete this comment" : "Delete this post"} placement="top" arrow>
+          <IconButton
+              onClick={() => setConfirmOpen(true)}
+              floated="right"
           >
-            <Icon name="trash" style={{ margin: 0 }} />
-          </Button>
-      </MyPopUp>
-      <Confirm
-        open={confirmOpen}
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={deletePostOrMutation}
-      />
-    </>
+            <DeleteIcon color={"secondary"}/>
+          </IconButton>
+        </HtmlTooltip>
+        <Dialog
+            fullScreen={fullScreen}
+            open={confirmOpen}
+            onClose={() => setConfirmOpen(false)}
+            aria-labelledby="responsive-dialog-title"
+        >
+          <DialogTitle id="responsive-dialog-title">{"Are sure you want to delete your comment?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              By deleting this comment means it will no longer be visible to viewers of this post
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={() => setConfirmOpen(false)} color="primary" variant={"outlined"}>
+              Cancel
+            </Button>
+            <Button onClick={deletePostOrMutation} color="secondary" variant={"contained"} autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+      </>
   );
 }
 

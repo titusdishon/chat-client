@@ -18,7 +18,7 @@ function MenuBar() {
       </Menu.Menu>
     </Menu>
   ) : (
-    <Menu pointing secondary size="massive" color="teal">
+    <Menu  size="massive" inverted>
       <Menu.Item
         name="home"
         active={activeItem === "home"}

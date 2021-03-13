@@ -1,18 +1,32 @@
-import React from "react";
-import { Button, Form } from "semantic-ui-react";
+import React, {useContext} from "react";
 import gql from "graphql-tag";
-import { useMutation } from "@apollo/react-hooks";
-import { FETCH_POSTS_QUERY } from "../utils/graphql";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {useMutation} from "@apollo/react-hooks";
+import {FETCH_POSTS_QUERY} from "../utils/graphql";
 import {usePost} from "../utils/hooks";
+import {Button, Grid, makeStyles} from "@material-ui/core";
+import {Link, Redirect} from "react-router-dom";
+import {AuthContext} from "../context/auth";
+import Editor from 'ckeditor5-custom-build/build/ckeditor';
+import {CKEditor} from '@ckeditor/ckeditor5-react';
+import {editorConfiguration} from "../shared/EditorConfig";
 
-function PostForm(props) {
-  const { values, onSubmit, onChange } = usePost(createPostCallBack, {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '90%',
+    backgroundColor: "#ffffff",
+    padding: " 90px auto auto auto",
+    margin: " auto ",
+  }
+}));
+
+
+function PostForm() {
+  const {values, onSubmit, onChange} = usePost(createPostCallBack, {
     body: "",
   });
-
-  const [createPost,{error}, loading] = useMutation(CREATE_POST_MUTATION, {
+  const classes = useStyles();
+  const {user} = useContext(AuthContext);
+  const [createPost, {error}, loading] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     update(proxy, result) {
       const data = proxy.readQuery({
@@ -20,57 +34,50 @@ function PostForm(props) {
       });
       if (data !== undefined) {
         data.getPosts = [result.data.createPost, ...data.getPosts];
-        proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
+        proxy.writeQuery({query: FETCH_POSTS_QUERY, data});
         values.body = "";
       }
     },
     onError(err) {
-      return;
     },
   });
 
   function createPostCallBack() {
-    createPost();
-    props.setOpen(false)
+    createPost()
   }
 
   return (
-    
-    <div className="post-form">
-      <Form onSubmit={onSubmit}  className={loading ? "loading" : ""}>
-        <h2>Create a post</h2>
-        <CKEditor
-          editor={ClassicEditor}
-          data=""
-          onReady={(editor) => {
-            // You can store the "editor" and use when it is needed.
-            console.log("Editor is ready to use!", editor);
-          }}
-          onChange={(event, editor) => {
-            const data = {body:editor.getData()};
-            console.log("Editor is ready to use!", editor);
-            onChange(data);
-          }}
-          // onBlur={(event, editor) => {
-          //   console.log("Blur.", editor);
-          // }}
-          // onFocus={(event, editor) => {
-          //   console.log("Focus.", editor);
-          // }}
-        />
-        <br/>
-        <br/>
-        <Button type="submit" color="grey" onClick={()=>props.setOpen(false)}>cancel</Button>
-        <Button type="submit" className="post-submit" color="teal">submit</Button>
-      </Form>
-      {error && (
-        <div className="ui error message">
-          <ul className="list">
-            <li>{error.graphQLErrors[0].message}</li>
-          </ul>
-        </div>
-      )}
-    </div>
+      <div>
+        <Grid container className={classes.root}>
+          {user ? <Grid xs={12} lg={12} md={12} sm={12} item>
+            <form onSubmit={onSubmit} className={loading ? "loading post-form" : "post-form"}>
+              <h2>Create a post</h2>
+              <CKEditor
+                  editor={ Editor }
+                  config={ editorConfiguration }
+                  onChange={ ( event, editor ) => {
+                    const data = {body:editor.getData()};
+                    console.log("DATA DATA", data)
+                    onChange(data);
+                  } }
+              />
+              <br/>
+              <Button variant="contained" color="default"> <Link to={"/"}>cancel</Link></Button>
+              <Button type="submit" className="post-submit" variant="contained" color="primary">submit</Button>
+            </form>
+            {error && (
+                <div className="ui error message">
+                  <ul className="list">
+                    <li>"An error occurred"</li>
+                  </ul>
+                </div>
+            )}
+            <br/>
+            <br/>
+            <br/>
+          </Grid> : <Redirect to={"/"}/>}
+        </Grid>
+      </div>
   );
 }
 
