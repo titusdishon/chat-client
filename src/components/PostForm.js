@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import {useMutation} from "@apollo/react-hooks";
 import {FETCH_POSTS_QUERY} from "../utils/graphql";
 import {usePost} from "../utils/hooks";
-import {Button, Grid, makeStyles} from "@material-ui/core";
+import {Button, Grid, makeStyles, Container} from "@material-ui/core";
 import {Link, Redirect} from "react-router-dom";
 import {AuthContext} from "../context/auth";
 import Editor from 'ckeditor5-custom-build/build/ckeditor';
@@ -12,7 +12,7 @@ import {editorConfiguration} from "../shared/EditorConfig";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '90%',
+    width: '100%',
     backgroundColor: "#ffffff",
     padding: " 90px auto auto auto",
     margin: " auto ",
@@ -47,7 +47,7 @@ function PostForm() {
   }
 
   return (
-      <div>
+      <Container>
         <Grid container className={classes.root}>
           {user ? <Grid xs={12} lg={12} md={12} sm={12} item>
             <form onSubmit={onSubmit} className={loading ? "loading post-form" : "post-form"}>
@@ -77,7 +77,7 @@ function PostForm() {
             <br/>
           </Grid> : <Redirect to={"/"}/>}
         </Grid>
-      </div>
+      </Container>
   );
 }
 

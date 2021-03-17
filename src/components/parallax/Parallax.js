@@ -15,9 +15,7 @@ import {Link} from "react-router-dom";
 const parallaxStyle = makeStyles((theme) => ({
     parallax: {
         height: "90vh",
-        maxHeight: "1000px",
         overflow: "hidden",
-        position: "relative",
         backgroundPosition: "center center",
         backgroundSize: "cover",
         margin: "0",
@@ -30,9 +28,7 @@ const parallaxStyle = makeStyles((theme) => ({
     },
     parallaxMobile: {
         height: "80vh",
-        maxHeight: "1000px",
         overflow: "hidden",
-        position: "relative",
         backgroundPosition: "center center",
         backgroundSize: "cover",
         marginTop: "57px",
@@ -44,9 +40,6 @@ const parallaxStyle = makeStyles((theme) => ({
     },
     small: {
         height: "380px"
-    },
-    container: {
-        paddingTop: '80px',
     },
     text: {
         padding: "120px 10px 0 10px",
@@ -63,8 +56,6 @@ const parallaxStyle = makeStyles((theme) => ({
         backgroundSize: "cover",
         height: "90vh",
         color: "#ffffff",
-        marginTop: "10px",
-        paddingTop: '110px',
     },
     mern: {
         margin: "48vh auto  auto",
@@ -153,14 +144,10 @@ function Parallax(props) {
     return (
         <div className={parallaxClasses}
              style={{...style, backgroundImage: "url(" + Image + ")", transform: transform}}>
-            <Grid container spacing={2} className={classes.container}>
+            <Grid container spacing={2}>
                 {!mobileView &&
                 <Stack mobileView={mobileView}/>
                 }
-                <br/>
-                <br/>
-                <br/>
-                <br/>
                 <Grid sm={12} xs={12} lg={4} md={5} className={mobileView ? classes.mobileView : classes.gridImage} item>
                     <Avatar alt="Remy Sharp" src={mern} className={mobileView ? classes.mernMobile : classes.mern}/>
                     <Typography variant={"h5"} className={classes.name}>Titus M. Dishon</Typography>

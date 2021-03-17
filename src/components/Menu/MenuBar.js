@@ -27,7 +27,7 @@ export default function MenuBar() {
 
     return (
         <Grid>
-            <Navbar mobileView={mobileView} drawerOpen={drawerOpen} setState={setState}/>
+            {/* <Navbar mobileView={mobileView} drawerOpen={drawerOpen} setState={setState}/> */}
             <Parallax filter mobileView={mobileView}/>
             <Divider/>
             {mobileView && <div style={{

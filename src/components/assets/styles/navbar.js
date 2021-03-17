@@ -2,7 +2,7 @@ import {makeStyles} from "@material-ui/core";
 
 export const navStyles = makeStyles(() => ({
     header: {
-        backgroundColor:"#5e753e",
+        backgroundColor:"#6c8a7d",
         margin:"auto",
         color:"#ffffff",
         "@media (max-width: 900px)": {
@@ -10,7 +10,7 @@ export const navStyles = makeStyles(() => ({
         },
     },
     headerTransparent: {
-        backgroundColor:"#5e753e",
+        backgroundColor:"#6c8a7d",
         margin:"auto",
         color:"#ffffff",
         "@media (max-width: 900px)": {

@@ -10,6 +10,7 @@ import PostForm from "./components/PostForm";
 import React, {useEffect, useState} from "react";
 import Navbar from "./components/navbar/Navbar";
 
+
 function App() {
   const [state, setState] = useState({
     mobileView: false,
