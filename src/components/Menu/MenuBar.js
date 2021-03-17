@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import Navbar from "../navbar/Navbar";
 import {Avatar, Divider, Grid} from "@material-ui/core";
 import Parallax from "../parallax/Parallax";
 import Stack from "../stack/Stack";
@@ -14,7 +13,7 @@ export default function MenuBar() {
         mobileView: false,
         drawerOpen: false,
     });
-    const {mobileView, drawerOpen} = state;
+    const {mobileView} = state;
     useEffect(() => {
         const setResponsiveness = () => {
             return window.innerWidth < 900
@@ -27,7 +26,6 @@ export default function MenuBar() {
 
     return (
         <Grid>
-            {/* <Navbar mobileView={mobileView} drawerOpen={drawerOpen} setState={setState}/> */}
             <Parallax filter mobileView={mobileView}/>
             <Divider/>
             {mobileView && <div style={{

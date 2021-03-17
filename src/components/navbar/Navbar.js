@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, {useContext, useEffect} from "react";
+import {makeStyles} from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -7,21 +7,12 @@ import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Container,
-  ListSubheader,
-} from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { navStyles } from "../assets/styles/navbar";
-import { headersData } from "./navList";
-import { AuthContext } from "../../context/auth";
+import {Container, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader,} from "@material-ui/core";
+import {Link} from "react-router-dom";
+import {navStyles} from "../assets/styles/navbar";
+import {headersData} from "./navList";
+import {AuthContext} from "../../context/auth";
 import StarIcon from "@material-ui/icons/Star";
-import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
   root: {
